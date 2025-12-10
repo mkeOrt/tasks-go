@@ -15,11 +15,11 @@ import (
 )
 
 func main() {
-	cfg := config.NewConfig()
-
 	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelDebug,
 	}))
+
+	cfg := config.NewConfig(logger)
 
 	db, err := database.NewSqliteDB(cfg.DB.ConnectionString)
 	if err != nil {
@@ -31,7 +31,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	repo := repository.NewTaskRepository(db)
-	taskService := service.NewTaskService(logger, repo)
+	taskService := service.NewTaskService(logger.With("package", "task"), repo)
 	taskHandler := transport.NewTaskHandler(taskService)
 
 	mux.Handle("/api/tasks", taskHandler.RegisterRoutes())

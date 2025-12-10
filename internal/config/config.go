@@ -1,8 +1,11 @@
 package config
 
 import (
+	"log/slog"
 	"os"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 type ServerConfig struct {
@@ -20,12 +23,17 @@ type Config struct {
 	DB     DatabaseConfig
 }
 
-func NewConfig() *Config {
+func NewConfig(logger *slog.Logger) *Config {
+	err := godotenv.Load()
+	if err != nil {
+		logger.Warn("Error loading .env file", "error", err)
+	}
+
 	return &Config{
 		Server: ServerConfig{
-			Addr:         ":8080",
-			ReadTimeout:  GetDurationEnvOrDefault("SERVER_READ_TIMEOUT", 10*time.Second),
-			WriteTimeout: GetDurationEnvOrDefault("SERVER_WRITE_TIMEOUT", 10*time.Second),
+			Addr:         getEnvOrDefault("SERVER_ADDR", ":8080"),
+			ReadTimeout:  getDurationEnvOrDefault("SERVER_READ_TIMEOUT", 10*time.Second),
+			WriteTimeout: getDurationEnvOrDefault("SERVER_WRITE_TIMEOUT", 10*time.Second),
 		},
 		DB: DatabaseConfig{
 			ConnectionString: getEnvOrDefault("GOOSE_DBSTRING", "database.db"),
@@ -40,7 +48,7 @@ func getEnvOrDefault(key string, defaultValue string) string {
 	return defaultValue
 }
 
-func GetDurationEnvOrDefault(key string, defaultValue time.Duration) time.Duration {
+func getDurationEnvOrDefault(key string, defaultValue time.Duration) time.Duration {
 	if value := os.Getenv(key); value != "" {
 		d, err := time.ParseDuration(value)
 		if err != nil {
