@@ -38,6 +38,7 @@ func main() {
 
 	// Wrap the mux with the logging middleware
 	handler := middleware.Logger(logger)(mux)
+	handler = middleware.Cors(&cfg.Cors)(handler)
 
 	srv := server.NewServer(cfg, handler, logger)
 	if err := srv.Run(); err != nil {

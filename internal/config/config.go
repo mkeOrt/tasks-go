@@ -3,6 +3,7 @@ package config
 import (
 	"log/slog"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -18,9 +19,14 @@ type DatabaseConfig struct {
 	ConnectionString string
 }
 
+type CorsConfig struct {
+	AllowedOrigins []string
+}
+
 type Config struct {
 	Server ServerConfig
 	DB     DatabaseConfig
+	Cors   CorsConfig
 }
 
 func NewConfig(logger *slog.Logger) *Config {
@@ -37,6 +43,9 @@ func NewConfig(logger *slog.Logger) *Config {
 		},
 		DB: DatabaseConfig{
 			ConnectionString: getEnvOrDefault("GOOSE_DBSTRING", "database.db"),
+		},
+		Cors: CorsConfig{
+			AllowedOrigins: getSliceEnvOrDefault("ALLOWED_ORIGINS", []string{"*"}),
 		},
 	}
 }
@@ -55,6 +64,13 @@ func getDurationEnvOrDefault(key string, defaultValue time.Duration) time.Durati
 			return defaultValue
 		}
 		return d
+	}
+	return defaultValue
+}
+
+func getSliceEnvOrDefault(key string, defaultValue []string) []string {
+	if value := os.Getenv(key); value != "" {
+		return strings.Split(value, ",")
 	}
 	return defaultValue
 }
