@@ -26,7 +26,9 @@ func main() {
 		logger.Error("failed to create database", "error", err)
 		os.Exit(1)
 	}
-	logger.Info("database created", "connectionString", cfg.DB.ConnectionString)
+	logger.Info("database created")
+
+	defer db.Close()
 
 	mux := http.NewServeMux()
 
