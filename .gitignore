@@ -1,0 +1,41 @@
+# Binaries
+/bin/
+/dist/
+main
+app
+tasks-go
+*.test
+*.out
+
+# OS
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Go
+vendor/
+go.work
+go.work.sum
+
+# Environment
+.env
+*.env
+!.env.example
+
+# SQLite
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
