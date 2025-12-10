@@ -9,7 +9,7 @@ import (
 	"github.com/mkeOrt/tasks-go/internal/repository"
 	"github.com/mkeOrt/tasks-go/internal/server"
 	"github.com/mkeOrt/tasks-go/internal/service"
-	transport "github.com/mkeOrt/tasks-go/internal/transport/httphandler"
+	"github.com/mkeOrt/tasks-go/internal/transport/httphandler"
 	"github.com/mkeOrt/tasks-go/internal/transport/middleware"
 	"github.com/mkeOrt/tasks-go/pkg/database"
 )
@@ -34,7 +34,7 @@ func main() {
 
 	repo := repository.NewTaskRepository(db)
 	taskService := service.NewTaskService(logger.With("package", "task"), repo)
-	taskHandler := transport.NewTaskHandler(taskService)
+	taskHandler := httphandler.NewTaskHandler(taskService)
 
 	mux.Handle("/api/tasks", taskHandler.RegisterRoutes())
 
