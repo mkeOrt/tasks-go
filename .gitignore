@@ -1,10 +1,6 @@
 # Binaries
 /bin/
 /dist/
-main
-app
-tasks-go
-*.test
 *.out
 
 # OS
