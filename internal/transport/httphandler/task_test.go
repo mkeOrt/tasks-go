@@ -59,7 +59,7 @@ func TestTaskHandler_GetAll(t *testing.T) {
 		name           string
 		serviceOptions *mockServiceOptions
 		expectedStatus int
-		expectedBody   []domain.Task
+		expectedBody   []dto.TaskDTO
 	}{
 		{
 			name: "success",
@@ -72,9 +72,9 @@ func TestTaskHandler_GetAll(t *testing.T) {
 				},
 			},
 			expectedStatus: http.StatusOK,
-			expectedBody: []domain.Task{
-				{ID: 1, Title: "Task 1"},
-				{ID: 2, Title: "Task 2"},
+			expectedBody: []dto.TaskDTO{
+				{ID: 1, Title: "Task 1", CreatedAt: "0001-01-01T00:00:00Z", UpdatedAt: "0001-01-01T00:00:00Z"},
+				{ID: 2, Title: "Task 2", CreatedAt: "0001-01-01T00:00:00Z", UpdatedAt: "0001-01-01T00:00:00Z"},
 			},
 		},
 		{
@@ -85,7 +85,7 @@ func TestTaskHandler_GetAll(t *testing.T) {
 				},
 			},
 			expectedStatus: http.StatusOK,
-			expectedBody:   []domain.Task{},
+			expectedBody:   []dto.TaskDTO{},
 		},
 		{
 			name: "error",
@@ -129,12 +129,15 @@ func TestTaskHandler_GetAll(t *testing.T) {
 
 				tasks := resp.Data
 
-				if len(uc.expectedBody) == 0 && len(tasks.Tasks) != 0 {
-					t.Fatalf("expected empty list but got %v", tasks)
+				if len(uc.expectedBody) == 0 {
+					if tasks != nil && len(tasks.Tasks) != 0 {
+						t.Fatalf("expected empty list but got %v", tasks)
+					}
+					return
 				}
 
-				if len(uc.expectedBody) != 0 && !reflect.DeepEqual(tasks.Tasks, uc.expectedBody) {
-					t.Errorf("expected body %v, got %v", uc.expectedBody, tasks)
+				if !reflect.DeepEqual(tasks.Tasks, uc.expectedBody) {
+					t.Errorf("expected body %v, got %v", uc.expectedBody, tasks.Tasks)
 				}
 			}
 		})

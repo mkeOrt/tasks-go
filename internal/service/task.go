@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 
 	"github.com/mkeOrt/tasks-go/internal/domain"
@@ -26,7 +27,7 @@ func (s *TaskService) GetAll(ctx context.Context) ([]domain.Task, error) {
 	tasks, err := s.repo.GetAll(ctx)
 	if err != nil {
 		s.logger.Error("failed to get all tasks", "error", err)
-		return nil, domain.ErrTasksRetrieveError
+		return nil, fmt.Errorf("%w: %w", domain.ErrTasksRetrieveError, err)
 	}
 	return tasks, nil
 }
