@@ -3,8 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"io"
-	"log/slog"
 	"reflect"
 	"testing"
 	"time"
@@ -29,15 +27,13 @@ func (m *mockTaskRepository) GetAll(ctx context.Context) ([]domain.Task, error) 
 }
 
 func TestNewTaskService(t *testing.T) {
-	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
-	s := NewTaskService(logger, nil)
+	s := NewTaskService(nil)
 	if s == nil {
 		t.Fatal("expected service to be initialized")
 	}
 }
 
 func TestTaskService_GetAll(t *testing.T) {
-	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
 
 	useCases := []struct {
 		name        string
@@ -95,7 +91,7 @@ func TestTaskService_GetAll(t *testing.T) {
 
 	for _, uc := range useCases {
 		t.Run(uc.name, func(t *testing.T) {
-			s := NewTaskService(logger, newMockTaskRepository(uc.repoOptions))
+			s := NewTaskService(newMockTaskRepository(uc.repoOptions))
 			tasks, err := s.GetAll(t.Context())
 
 			if uc.expectedErr != nil {

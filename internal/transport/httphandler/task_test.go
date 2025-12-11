@@ -9,6 +9,8 @@ import (
 	"reflect"
 	"testing"
 
+	"log/slog"
+
 	"github.com/mkeOrt/tasks-go/internal/domain"
 	"github.com/mkeOrt/tasks-go/internal/transport/dto"
 )
@@ -30,14 +32,14 @@ func (m *mockTaskService) GetAll(ctx context.Context) ([]domain.Task, error) {
 }
 
 func TestNewTaskHandler(t *testing.T) {
-	h := NewTaskHandler(newMockTaskService(&mockServiceOptions{}))
+	h := NewTaskHandler(slog.Default(), newMockTaskService(&mockServiceOptions{}))
 	if h == nil {
 		t.Fatal("expected handler to be initialized")
 	}
 }
 
 func TestTaskHandler_RegisterRoutes(t *testing.T) {
-	h := NewTaskHandler(newMockTaskService(&mockServiceOptions{
+	h := NewTaskHandler(slog.Default(), newMockTaskService(&mockServiceOptions{
 		getAllFunc: func(ctx context.Context) ([]domain.Task, error) {
 			return []domain.Task{}, nil
 		},
@@ -102,7 +104,7 @@ func TestTaskHandler_GetAll(t *testing.T) {
 	for _, uc := range useCases {
 		t.Run(uc.name, func(t *testing.T) {
 			svc := newMockTaskService(uc.serviceOptions)
-			h := NewTaskHandler(svc)
+			h := NewTaskHandler(slog.Default(), svc)
 
 			req := httptest.NewRequest(http.MethodGet, "/api/tasks", nil)
 			w := httptest.NewRecorder()
