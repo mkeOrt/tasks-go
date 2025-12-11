@@ -1,6 +1,6 @@
 package response
 
 const (
-	ErrMsgTaskRetrieve = "No se pudo recuperar la lista de tareas"
-	ErrMsgUnexpected   = "Ocurrió un error inesperado al procesar la solicitud"
+	ErrMsgTaskRetrieve = "Failed to retrieve the task list"
+	ErrMsgUnexpected   = "An unexpected error occurred while processing the request"
 )

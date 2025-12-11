@@ -19,13 +19,13 @@ func TestMapErrorToResponse(t *testing.T) {
 			name:           "Tasks Retrieve Error",
 			err:            domain.ErrTasksRetrieveError,
 			expectedStatus: http.StatusInternalServerError,
-			expectedMsg:    "No se pudo recuperar la lista de tareas",
+			expectedMsg:    "Failed to retrieve the task list",
 		},
 		{
 			name:           "Unknown Error",
 			err:            errors.New("unknown error"),
 			expectedStatus: http.StatusInternalServerError,
-			expectedMsg:    "Ocurrió un error inesperado al procesar la solicitud",
+			expectedMsg:    "An unexpected error occurred while processing the request",
 		},
 	}
 
