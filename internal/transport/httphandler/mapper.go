@@ -13,8 +13,8 @@ import (
 func MapErrorToResponse(err error) (int, string) {
 	switch {
 	case errors.Is(err, domain.ErrTasksRetrieveError):
-		return http.StatusInternalServerError, "No se pudo recuperar la lista de tareas"
+		return http.StatusInternalServerError, ErrMsgTaskRetrieve
 	default:
-		return http.StatusInternalServerError, "Ocurrió un error inesperado al procesar la solicitud"
+		return http.StatusInternalServerError, ErrMsgUnexpected
 	}
 }
