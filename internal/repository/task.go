@@ -20,7 +20,7 @@ func NewTaskRepository(db *sql.DB) *TaskRepository {
 
 // GetAll retrieves all tasks from the database.
 func (r *TaskRepository) GetAll(ctx context.Context) ([]domain.Task, error) {
-	q := "SELECT id, title, done, created_at, updated_at FROM taskss"
+	q := "SELECT id, title, done, created_at, updated_at FROM tasks"
 	rows, err := r.db.QueryContext(ctx, q)
 	if err != nil {
 		return nil, fmt.Errorf("TaskRepository.GetAll: querying: %w", err)
