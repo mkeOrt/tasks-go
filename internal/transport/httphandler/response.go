@@ -8,8 +8,8 @@ import (
 // Response is a generic HTTP response wrapper.
 type Response struct {
 	Success bool   `json:"success"`
-	Data    any    `json:"data"`
-	Error   string `json:"error"`
+	Data    any    `json:"data,omitempty"`
+	Error   string `json:"error,omitempty"`
 }
 
 // ResponseWithJson writes a JSON response and handles encoding errors.
@@ -27,6 +27,12 @@ func RespondWithJson(w http.ResponseWriter, code int, payload any) {
 		Success: true,
 		Data:    payload,
 	})
+}
+
+// RespondWithError writes an error response, mapping the error to a status code and message.
+func RespondWithError(w http.ResponseWriter, err error) {
+	code, msg := MapErrorToResponse(err)
+	RespondWithErrorJson(w, code, msg)
 }
 
 // RespondWithErrorJson writes an error JSON response.
