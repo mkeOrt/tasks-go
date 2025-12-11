@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"io"
 	"log/slog"
 	"reflect"
@@ -101,7 +102,7 @@ func TestTaskService_GetAll(t *testing.T) {
 				if err == nil {
 					t.Fatal("expected error but got nil")
 				}
-				if err.Error() != uc.expectedErr.Error() {
+				if !errors.Is(err, uc.expectedErr) {
 					t.Fatalf("expected error %v but got %v", uc.expectedErr, err)
 				}
 			} else {
