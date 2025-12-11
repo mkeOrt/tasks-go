@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 
 	"github.com/mkeOrt/tasks-go/internal/domain"
@@ -24,7 +23,7 @@ func (r *TaskRepository) GetAll(ctx context.Context) ([]domain.Task, error) {
 	q := "SELECT id, title, done, created_at, updated_at FROM tasks"
 	rows, err := r.db.QueryContext(ctx, q)
 	if err != nil {
-		return nil, fmt.Errorf("repository.TaskRepository.GetAll: %w", errors.Join(domain.ErrTaskQueryFailed, err))
+		return nil, fmt.Errorf("repository.TaskRepository.GetAll: %w: %w", domain.ErrTaskQueryFailed, err)
 	}
 	defer rows.Close()
 
@@ -32,13 +31,13 @@ func (r *TaskRepository) GetAll(ctx context.Context) ([]domain.Task, error) {
 	for rows.Next() {
 		var task domain.Task
 		if err := rows.Scan(&task.ID, &task.Title, &task.Done, &task.CreatedAt, &task.UpdatedAt); err != nil {
-			return nil, fmt.Errorf("repository.TaskRepository.GetAll scan: %w", errors.Join(domain.ErrTaskScanFailed, err))
+			return nil, fmt.Errorf("repository.TaskRepository.GetAll scan: %w: %w", domain.ErrTaskScanFailed, err)
 		}
 		tasks = append(tasks, task)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("repository.TaskRepository.GetAll rows: %w", errors.Join(domain.ErrTaskQueryFailed, err))
+		return nil, fmt.Errorf("repository.TaskRepository.GetAll rows: %w: %w", domain.ErrTaskQueryFailed, err)
 	}
 
 	if tasks == nil {
