@@ -5,11 +5,11 @@ import (
 	"net/http"
 
 	"github.com/mkeOrt/tasks-go/internal/config"
+	"github.com/mkeOrt/tasks-go/internal/database"
 	"github.com/mkeOrt/tasks-go/internal/repository"
 	"github.com/mkeOrt/tasks-go/internal/service"
 	"github.com/mkeOrt/tasks-go/internal/transport/httphandler"
 	"github.com/mkeOrt/tasks-go/internal/transport/middleware"
-	"github.com/mkeOrt/tasks-go/pkg/database"
 )
 
 // Container centraliza las dependencias de la aplicación.

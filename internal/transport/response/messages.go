@@ -1,4 +1,4 @@
-package httphandler
+package response
 
 const (
 	ErrMsgTaskRetrieve = "No se pudo recuperar la lista de tareas"

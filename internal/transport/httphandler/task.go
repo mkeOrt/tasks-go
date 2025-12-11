@@ -5,7 +5,8 @@ import (
 	"net/http"
 
 	"github.com/mkeOrt/tasks-go/internal/domain"
-	"github.com/mkeOrt/tasks-go/internal/dto"
+	"github.com/mkeOrt/tasks-go/internal/transport/dto"
+	"github.com/mkeOrt/tasks-go/internal/transport/response"
 )
 
 // TaskService defines the business logic interface for tasks.
@@ -32,9 +33,9 @@ func (h *TaskHandler) RegisterRoutes() *http.ServeMux {
 func (h *TaskHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	tasks, err := h.svc.GetAll(r.Context())
 	if err != nil {
-		RespondWithError(w, err)
+		response.RespondWithError(w, err)
 		return
 	}
 	dtos := dto.MapTasksToDTO(tasks)
-	RespondWithJson(w, http.StatusOK, dto.TasksResponse{Tasks: dtos})
+	response.RespondWithJson(w, http.StatusOK, dto.TasksResponse{Tasks: dtos})
 }
