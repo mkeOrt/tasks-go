@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/mkeOrt/tasks-go/internal/domain"
-	"github.com/mkeOrt/tasks-go/internal/dto"
+	"github.com/mkeOrt/tasks-go/internal/transport/dto"
 )
 
 type mockServiceOptions struct {
