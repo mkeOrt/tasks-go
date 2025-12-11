@@ -17,7 +17,7 @@ func TestMapErrorToResponse(t *testing.T) {
 	}{
 		{
 			name:           "Tasks Retrieve Error",
-			err:            domain.ErrTasksRetrieveError,
+			err:            domain.ErrTaskRetrievalFailed,
 			expectedStatus: http.StatusInternalServerError,
 			expectedMsg:    "Failed to retrieve the task list",
 		},

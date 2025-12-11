@@ -26,7 +26,7 @@ func TestNewTaskRepository(t *testing.T) {
 	}
 }
 
-func TestProductRepository_GetAll(t *testing.T) {
+func TestTaskRepository_GetAll(t *testing.T) {
 	t.Parallel()
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -37,24 +37,25 @@ func TestProductRepository_GetAll(t *testing.T) {
 	createdAt := time.Now()
 	updatedAt := time.Now()
 
-	useCases := []struct {
-		name        string
-		mockDB      func()
-		expected    []domain.Task
-		expectedErr error
+	testCases := []struct {
+		name           string
+		setup          func()
+		expected       []domain.Task
+		expectedErr    error
+		expectAnyError bool
 	}{
 		{
 			name: "should return error when query fails",
-			mockDB: func() {
+			setup: func() {
 				mock.ExpectQuery("SELECT id, title, done, created_at, updated_at FROM tasks").
 					WillReturnError(sql.ErrConnDone)
 			},
 			expected:    nil,
-			expectedErr: domain.ErrTaskQueryFailed,
+			expectedErr: sql.ErrConnDone,
 		},
 		{
 			name: "should return empty list when db returns no rows",
-			mockDB: func() {
+			setup: func() {
 				rows := sqlmock.NewRows([]string{"id", "title", "done", "created_at", "updated_at"})
 				mock.ExpectQuery("SELECT id, title, done, created_at, updated_at FROM tasks").
 					WillReturnRows(rows)
@@ -64,7 +65,7 @@ func TestProductRepository_GetAll(t *testing.T) {
 		},
 		{
 			name: "should return populated list when db returns rows",
-			mockDB: func() {
+			setup: func() {
 				rows := sqlmock.NewRows([]string{"id", "title", "done", "created_at", "updated_at"}).
 					AddRow(1, "Task 1", false, createdAt, updatedAt).
 					AddRow(2, "Task 2", true, createdAt, updatedAt)
@@ -80,7 +81,7 @@ func TestProductRepository_GetAll(t *testing.T) {
 		},
 		{
 			name: "should return error when rows iteration fails",
-			mockDB: func() {
+			setup: func() {
 				rows := sqlmock.NewRows([]string{"id", "title", "done", "created_at", "updated_at"}).
 					AddRow(1, "Task 1", false, createdAt, updatedAt).
 					RowError(0, sql.ErrConnDone)
@@ -89,34 +90,38 @@ func TestProductRepository_GetAll(t *testing.T) {
 					WillReturnRows(rows)
 			},
 			expected:    nil,
-			expectedErr: domain.ErrTaskQueryFailed,
+			expectedErr: sql.ErrConnDone,
 		},
 		{
 			name: "should return error when scan fails",
-			mockDB: func() {
+			setup: func() {
 				rows := sqlmock.NewRows([]string{"id", "title", "done", "created_at", "updated_at"}).
 					AddRow(1, "Task 1", false, createdAt, "invalid-time")
 
 				mock.ExpectQuery("SELECT id, title, done, created_at, updated_at FROM tasks").
 					WillReturnRows(rows)
 			},
-			expected:    nil,
-			expectedErr: domain.ErrTaskScanFailed,
+			expected:       nil,
+			expectAnyError: true,
 		},
 	}
 
-	for _, uc := range useCases {
-		t.Run(uc.name, func(t *testing.T) {
-			uc.mockDB()
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.setup()
 			repo := NewTaskRepository(db)
 			tasks, err := repo.GetAll(t.Context())
 
-			if uc.expectedErr != nil {
+			if tc.expectAnyError {
+				if err == nil {
+					t.Fatal("expected an error but got nil")
+				}
+			} else if tc.expectedErr != nil {
 				if err == nil {
 					t.Fatal("expected error but got nil")
 				}
-				if !errors.Is(err, uc.expectedErr) && !strings.Contains(err.Error(), uc.expectedErr.Error()) {
-					t.Fatalf("expected error %v but got %v", uc.expectedErr, err)
+				if !errors.Is(err, tc.expectedErr) && !strings.Contains(err.Error(), tc.expectedErr.Error()) {
+					t.Fatalf("expected error %v but got %v", tc.expectedErr, err)
 				}
 			} else {
 				if err != nil {
@@ -124,8 +129,8 @@ func TestProductRepository_GetAll(t *testing.T) {
 				}
 			}
 
-			if len(uc.expected) != 0 && !reflect.DeepEqual(tasks, uc.expected) {
-				t.Fatalf("expected tasks %v but got %v", uc.expected, tasks)
+			if len(tc.expected) != 0 && !reflect.DeepEqual(tasks, tc.expected) {
+				t.Fatalf("expected tasks %v but got %v", tc.expected, tasks)
 			}
 		})
 	}

@@ -23,7 +23,7 @@ func NewTaskService(repo domain.TaskRepository) *TaskService {
 func (s *TaskService) GetAll(ctx context.Context) ([]domain.Task, error) {
 	tasks, err := s.repo.GetAll(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("service.TaskService.GetAll: %w: %w", domain.ErrTasksRetrieveError, err)
+		return nil, fmt.Errorf("TaskService.GetAll: %w: %w", domain.ErrTaskRetrievalFailed, err)
 	}
 	return tasks, nil
 }
