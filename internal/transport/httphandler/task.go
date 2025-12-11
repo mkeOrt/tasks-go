@@ -32,15 +32,7 @@ func (h *TaskHandler) RegisterRoutes() *http.ServeMux {
 func (h *TaskHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	tasks, err := h.svc.GetAll(r.Context())
 	if err != nil {
-		statusCode := MapErrorToStatusCode(err)
-		var errorMsg string
-
-		if statusCode == http.StatusInternalServerError {
-			errorMsg = "Ocurrió un error interno al procesar la solicitud"
-		} else {
-			errorMsg = err.Error()
-		}
-		RespondWithErrorJson(w, statusCode, errorMsg)
+		RespondWithError(w, err)
 		return
 	}
 	dtos := dto.MapTasksToDTO(tasks)
