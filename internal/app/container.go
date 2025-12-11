@@ -26,8 +26,8 @@ func NewContainer(cfg *config.Config, logger *slog.Logger) (*Container, error) {
 	}
 
 	repo := repository.NewTaskRepository(db)
-	taskService := service.NewTaskService(logger.With("package", "task"), repo)
-	taskHandler := httphandler.NewTaskHandler(taskService)
+	taskService := service.NewTaskService(repo)
+	taskHandler := httphandler.NewTaskHandler(logger.With(slog.String("package", "task")), taskService)
 
 	mux := http.NewServeMux()
 	mux.Handle("/api/tasks", taskHandler.RegisterRoutes())

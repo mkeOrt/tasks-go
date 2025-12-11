@@ -2,6 +2,7 @@ package httphandler
 
 import (
 	"context"
+	"log/slog"
 	"net/http"
 
 	"github.com/mkeOrt/tasks-go/internal/domain"
@@ -16,12 +17,16 @@ type TaskService interface {
 
 // TaskHandler handles HTTP requests for tasks.
 type TaskHandler struct {
-	svc TaskService
+	logger *slog.Logger
+	svc    TaskService
 }
 
 // NewTaskHandler creates a new TaskHandler.
-func NewTaskHandler(svc TaskService) *TaskHandler {
-	return &TaskHandler{svc: svc}
+func NewTaskHandler(logger *slog.Logger, svc TaskService) *TaskHandler {
+	return &TaskHandler{
+		logger: logger,
+		svc:    svc,
+	}
 }
 
 func (h *TaskHandler) RegisterRoutes() *http.ServeMux {
@@ -33,6 +38,7 @@ func (h *TaskHandler) RegisterRoutes() *http.ServeMux {
 func (h *TaskHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	tasks, err := h.svc.GetAll(r.Context())
 	if err != nil {
+		h.logger.Error("failed to get all tasks", slog.String("error", err.Error()))
 		response.RespondWithError(w, err)
 		return
 	}
