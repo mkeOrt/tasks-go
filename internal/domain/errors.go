@@ -2,9 +2,11 @@ package domain
 
 import "errors"
 
-// Tasks errors
+// Task errors represent domain-level error conditions.
+// These are business errors, not implementation details.
 var (
-	ErrTasksRetrieveError = errors.New("failed to retrieve task list")
-	ErrTaskQueryFailed    = errors.New("failed to execute query")
-	ErrTaskScanFailed     = errors.New("failed to scan task")
+	// ErrTaskNotFound indicates that the requested task does not exist.
+	ErrTaskNotFound = errors.New("task not found")
+	// ErrTaskRetrievalFailed indicates a failure when fetching tasks.
+	ErrTaskRetrievalFailed = errors.New("failed to retrieve tasks")
 )

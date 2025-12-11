@@ -20,10 +20,10 @@ func NewTaskRepository(db *sql.DB) *TaskRepository {
 
 // GetAll retrieves all tasks from the database.
 func (r *TaskRepository) GetAll(ctx context.Context) ([]domain.Task, error) {
-	q := "SELECT id, title, done, created_at, updated_at FROM tasks"
+	q := "SELECT id, title, done, created_at, updated_at FROM taskss"
 	rows, err := r.db.QueryContext(ctx, q)
 	if err != nil {
-		return nil, fmt.Errorf("repository.TaskRepository.GetAll: %w: %w", domain.ErrTaskQueryFailed, err)
+		return nil, fmt.Errorf("TaskRepository.GetAll: querying: %w", err)
 	}
 	defer rows.Close()
 
@@ -31,13 +31,13 @@ func (r *TaskRepository) GetAll(ctx context.Context) ([]domain.Task, error) {
 	for rows.Next() {
 		var task domain.Task
 		if err := rows.Scan(&task.ID, &task.Title, &task.Done, &task.CreatedAt, &task.UpdatedAt); err != nil {
-			return nil, fmt.Errorf("repository.TaskRepository.GetAll scan: %w: %w", domain.ErrTaskScanFailed, err)
+			return nil, fmt.Errorf("TaskRepository.GetAll: scanning row: %w", err)
 		}
 		tasks = append(tasks, task)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("repository.TaskRepository.GetAll rows: %w: %w", domain.ErrTaskQueryFailed, err)
+		return nil, fmt.Errorf("TaskRepository.GetAll: iterating rows: %w", err)
 	}
 
 	if tasks == nil {

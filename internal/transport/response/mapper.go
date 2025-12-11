@@ -12,7 +12,7 @@ import (
 // Everything else returns a generic internal error message.
 func MapErrorToResponse(err error) (int, string) {
 	switch {
-	case errors.Is(err, domain.ErrTasksRetrieveError):
+	case errors.Is(err, domain.ErrTaskRetrievalFailed):
 		return http.StatusInternalServerError, ErrMsgTaskRetrieve
 	default:
 		return http.StatusInternalServerError, ErrMsgUnexpected
