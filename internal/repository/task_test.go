@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -49,7 +50,7 @@ func TestProductRepository_GetAll(t *testing.T) {
 					WillReturnError(sql.ErrConnDone)
 			},
 			expected:    nil,
-			expectedErr: sql.ErrConnDone,
+			expectedErr: domain.ErrTaskQueryFailed,
 		},
 		{
 			name: "should return empty list when db returns no rows",
@@ -88,7 +89,7 @@ func TestProductRepository_GetAll(t *testing.T) {
 					WillReturnRows(rows)
 			},
 			expected:    nil,
-			expectedErr: sql.ErrConnDone,
+			expectedErr: domain.ErrTaskQueryFailed,
 		},
 		{
 			name: "should return error when scan fails",
@@ -100,7 +101,7 @@ func TestProductRepository_GetAll(t *testing.T) {
 					WillReturnRows(rows)
 			},
 			expected:    nil,
-			expectedErr: errors.New("sql: Scan error on column index 4, name \"updated_at\": unsupported Scan, storing driver.Value type string into type *time.Time"),
+			expectedErr: domain.ErrTaskScanFailed,
 		},
 	}
 
@@ -114,7 +115,7 @@ func TestProductRepository_GetAll(t *testing.T) {
 				if err == nil {
 					t.Fatal("expected error but got nil")
 				}
-				if err.Error() != uc.expectedErr.Error() {
+				if !errors.Is(err, uc.expectedErr) && !strings.Contains(err.Error(), uc.expectedErr.Error()) {
 					t.Fatalf("expected error %v but got %v", uc.expectedErr, err)
 				}
 			} else {
